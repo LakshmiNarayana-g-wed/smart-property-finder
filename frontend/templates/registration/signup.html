@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Join | Smart Property Finder{% endblock %}
+{% block content %}
+<section class="auth-page">
+  <div class="auth-shell auth-shell-signup">
+    <div class="auth-visual">
+      <div>
+        <p class="eyebrow">Join the platform</p>
+        <h1>Save homes, list properties, and manage leads in one place.</h1>
+        <p>Choose your role during signup so your workspace opens with the right tools from day one.</p>
+      </div>
+      <div class="auth-trust-row">
+        <span><i class="bi bi-house-check"></i> Buyers</span>
+        <span><i class="bi bi-building-check"></i> Agents</span>
+        <span><i class="bi bi-speedometer2"></i> Admins</span>
+      </div>
+    </div>
+
+    <div class="auth-card auth-card-wide">
+      <div class="auth-card-header">
+        <p class="eyebrow">Role-based access</p>
+        <h2 class="auth-title">Create account</h2>
+        <p class="text-white-50 mb-0">Use a working email address. It will be used for login verification and password recovery.</p>
+      </div>
+      <form method="post" class="js-loading-form auth-form">{% csrf_token %}
+        <div class="auth-field-grid">
+          {% for field in form %}
+          <div class="{% if field.name == 'first_name' or field.name == 'last_name' or field.name == 'role' %}auth-field-half{% else %}auth-field-full{% endif %}">
+            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.help_text %}<small class="form-text text-white-50">{{ field.help_text|safe }}</small>{% endif %}
+            {% if field.errors %}<div class="text-danger small">{{ field.errors|join:', ' }}</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+        {% if form.non_field_errors %}<div class="alert alert-danger mt-3">{{ form.non_field_errors }}</div>{% endif %}
+        <button class="btn btn-gold w-100 py-3 mt-4" type="submit">
+          <span class="spinner-border spinner-border-sm me-2 d-none" aria-hidden="true"></span>
+          <span class="btn-label">Create Account</span>
+        </button>
+      </form>
+      <p class="mt-4 mb-0 text-center text-white-50">Already registered? <a href="{% url 'login' %}">Login</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

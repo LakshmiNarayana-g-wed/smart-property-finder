@@ -1,0 +1,146 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Smart Property Finder{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg luxury-nav">
+  <div class="container-fluid px-3 px-lg-5">
+    <a class="navbar-brand brand-mark" href="{% url 'property_list' %}">
+      <span class="brand-icon"><i class="bi bi-gem"></i></span>
+      Smart Property Finder
+    </a>
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav mx-auto align-items-lg-center nav-pills-glass">
+        <li class="nav-item"><a class="nav-link" href="{% url 'property_list' %}">Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'property_list' %}#properties">Properties</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="{% url 'floor_plans' %}" role="button" data-bs-toggle="dropdown" aria-expanded="false">Floor Plans</a>
+          <ul class="dropdown-menu floor-plan-menu">
+            <li><a class="dropdown-item" href="{% url 'floor_plan_detail' 'master-plan' %}">Master Plan</a></li>
+            <li><a class="dropdown-item" href="{% url 'floor_plan_detail' 'building-a' %}">Building A</a></li>
+            <li><a class="dropdown-item" href="{% url 'floor_plan_detail' 'building-b' %}">Building B</a></li>
+            <li><a class="dropdown-item" href="{% url 'floor_plan_detail' 'building-g' %}">Building G</a></li>
+            <li><a class="dropdown-item" href="{% url 'floor_plan_detail' 'building-l' %}">Building L</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'buy_properties' %}">Buy</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'rent_properties' %}">Rent</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'villa_properties' %}">Villas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'apartment_properties' %}">Apartments</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'house_properties' %}">Houses</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'commercial_properties' %}">Commercial</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'land_properties' %}">Lands</a></li>
+      </ul>
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+        {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'my_properties' %}">My Listings</a></li>
+          <li class="nav-item"><a class="nav-icon" href="{% url 'wishlist' %}" aria-label="Wishlist"><i class="bi bi-heart"></i></a></li>
+          {% if user.is_staff %}<li class="nav-item"><a class="nav-icon" href="/admin/" aria-label="Admin"><i class="bi bi-speedometer2"></i></a></li>{% endif %}
+          <li class="nav-item"><a class="btn btn-gold btn-sm" href="{% url 'property_create' %}"><i class="bi bi-plus-lg"></i> List Property</a></li>
+          <li class="nav-item">
+            <form method="post" action="{% url 'logout' %}">{% csrf_token %}
+              <button class="btn btn-outline-light btn-sm">Logout</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+          <li class="nav-item"><a class="btn btn-gold btn-sm" href="{% url 'signup' %}">Join Now</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main>
+  {% if messages %}
+  <div class="toast-stack">
+    {% for m in messages %}
+      <div class="alert luxury-alert alert-{{ m.tags|default:'info' }} alert-dismissible fade show">
+        {{ m }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+{% if not user.is_authenticated %}
+<div class="modal fade account-required-modal" id="accountRequiredModal" tabindex="-1" aria-labelledby="accountRequiredModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <div>
+          <p class="section-kicker mb-1">Account required</p>
+          <h2 class="modal-title h4" id="accountRequiredModalLabel">Please login to your account</h2>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body pt-0">
+        <p class="soft-text mb-0">Create an account or login to view property details, save homes, and contact agents.</p>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <a href="{% url 'login' %}" class="btn btn-luxury-light">Login</a>
+        <a href="{% url 'signup' %}" class="btn btn-gold">Create Account</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<footer class="luxury-footer">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="row g-4 align-items-end">
+      <div class="col-lg-5">
+        <a class="brand-mark footer-brand" href="{% url 'property_list' %}">
+          <span class="brand-icon"><i class="bi bi-gem"></i></span>
+          Smart Property Finder
+        </a>
+        <p class="footer-copy">Curated homes, discreet agents, and a polished search experience for people who expect real estate to feel effortless.</p>
+      </div>
+      <div class="col-lg-4">
+        <div class="footer-links">
+          <a href="{% url 'property_list' %}#properties">Properties</a>
+          <a href="{% url 'buy_properties' %}">Buy</a>
+          <a href="{% url 'rent_properties' %}">Rent</a>
+          <a href="{% url 'villa_properties' %}">Villas</a>
+          <a href="{% url 'apartment_properties' %}">Apartments</a>
+          <a href="{% url 'house_properties' %}">Houses</a>
+          <a href="{% url 'commercial_properties' %}">Commercial</a>
+          <a href="{% url 'land_properties' %}">Lands</a>
+          <a href="{% url 'property_list' %}#why-us">Why Us</a>
+          <a href="{% url 'property_create' %}">For Agents</a>
+          <a href="/admin/">Admin</a>
+        </div>
+      </div>
+      <div class="col-lg-3 text-lg-end">
+        <div class="social-row">
+          <a href="#" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+          <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
+        </div>
+        <p class="small text-white-50 mb-0">&copy; {% now "Y" %} Smart Property Finder</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

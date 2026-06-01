@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section-pad" style="padding-top:130px;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="form-shell p-4 p-lg-5">
+          <p class="section-kicker">Confirm action</p>
+          <h1 class="section-title text-dark">Delete listing?</h1>
+          <p class="soft-text">This will permanently remove "{{ property.title }}" and its gallery images.</p>
+          <form method="post">{% csrf_token %}
+            <button class="btn btn-outline-danger rounded-pill px-4 py-3">Yes, delete</button>
+            <a href="{{ property.get_absolute_url }}" class="btn btn-luxury-light">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

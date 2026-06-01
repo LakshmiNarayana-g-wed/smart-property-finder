@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load property_extras %}
+{% block title %}Smart Property Finder | Luxury Real Estate{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-panel">
+    <p class="eyebrow">Luxury real estate intelligence</p>
+    <h1>Discover refined homes for <em>modern living</em></h1>
+    <p class="hero-copy">Browse curated properties for sale or rent with immersive photography, precise filters, agent access, and a quieter way to find the address that fits your life.</p>
+
+    <form method="get" class="search-console">
+      <div class="row g-2 align-items-center">
+        <div class="col-lg-4">
+          <input name="q" value="{{ filters.q }}" class="form-control" placeholder="Search city, landmark, or property">
+        </div>
+        <div class="col-sm-6 col-lg-2">
+          <select name="listing_type" class="form-select">
+            <option value="">Buy or Rent</option>
+            <option value="buy" {% if filters.listing_type == 'buy' %}selected{% endif %}>Buy</option>
+            <option value="rent" {% if filters.listing_type == 'rent' %}selected{% endif %}>Rent</option>
+          </select>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+          <select name="property_type" class="form-select">
+            <option value="">Property type</option>
+            <option value="apartment" {% if filters.property_type == 'apartment' %}selected{% endif %}>Apartment</option>
+            <option value="villa" {% if filters.property_type == 'villa' %}selected{% endif %}>Villa</option>
+            <option value="house" {% if filters.property_type == 'house' %}selected{% endif %}>House</option>
+            <option value="commercial" {% if filters.property_type == 'commercial' %}selected{% endif %}>Commercial</option>
+            <option value="land" {% if filters.property_type == 'land' %}selected{% endif %}>Land</option>
+          </select>
+        </div>
+        <div class="col-sm-7 col-lg-2">
+          <input name="location" value="{{ filters.location }}" class="form-control" placeholder="Location">
+        </div>
+        <div class="col-sm-5 col-lg-2">
+          <button class="btn btn-gold w-100 h-100"><i class="bi bi-search"></i> Find Now</button>
+        </div>
+      </div>
+    </form>
+
+    <div class="stat-strip">
+      <div class="stat-card"><strong>{{ total_properties|default:0 }}+</strong><span>Approved properties</span></div>
+      <div class="stat-card"><strong>72</strong><span>Prime communities</span></div>
+      <div class="stat-card"><strong>24/7</strong><span>Agent support</span></div>
+      <div class="stat-card"><strong>98%</strong><span>Client satisfaction</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad section-dark">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-4 mb-4">
+      <div>
+        <p class="section-kicker">Featured collection</p>
+        <h2 class="section-title">Best <em>properties</em></h2>
+      </div>
+      <p class="soft-text text-white-50 col-lg-4 mb-0">Handpicked listings with standout architecture, desirable neighborhoods, and presentation worthy of a private showing.</p>
+    </div>
+    <div class="swiper featured-swiper">
+      <div class="swiper-wrapper">
+        {% for p in featured_properties %}
+        <div class="swiper-slide">
+          {% include 'properties/partials/property_card.html' with p=p wishlist_ids=wishlist_ids %}
+        </div>
+        {% empty %}
+        <div class="glass-card p-5 text-center text-white">Add your first property to begin the luxury collection.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mobile-experience section-pad">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-4">
+        <p class="section-kicker">Mobile discovery</p>
+        <h2 class="section-title">Search, save, and tour from a phone-first view</h2>
+        <p class="text-white-50 mt-3">A dark premium mobile interface gives buyers quick access to saved properties, rich gallery previews, price filters, and instant tour actions.</p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <span class="mobile-feature-pill"><i class="bi bi-search"></i> Fast search</span>
+          <span class="mobile-feature-pill"><i class="bi bi-heart"></i> Wishlist</span>
+          <span class="mobile-feature-pill"><i class="bi bi-calendar2-check"></i> Schedule tour</span>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="phone-showcase">
+          <article class="phone-frame phone-list-view">
+            <div class="phone-status"><span>9:30 PM</span><span><i class="bi bi-reception-4"></i> <i class="bi bi-wifi"></i> <i class="bi bi-battery-full"></i></span></div>
+            <div class="phone-user">
+              <div class="phone-avatar">JW</div>
+              <div><span>Good morning!</span><strong>Jenny Wilson</strong></div>
+              <button class="phone-icon"><i class="bi bi-map"></i></button>
+            </div>
+            <div class="phone-search"><i class="bi bi-search"></i><span>Bengaluru, Karnataka</span><i class="bi bi-sliders ms-auto"></i></div>
+            <div class="phone-chips">
+              <span class="active">All</span><span>Price</span><span>Property</span><span>Bed / Bath</span>
+            </div>
+            {% for p in featured_properties|slice:":2" %}
+            <a href="{{ p.get_absolute_url }}" class="phone-property-card">
+              {% if p.images.first %}
+              <img src="{{ p.images.first.image.url }}" alt="{{ p.title }}">
+              {% else %}
+              <img src="https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=900&q=80" alt="{{ p.title }}">
+              {% endif %}
+              <span class="phone-sale-dot"><i></i> For sale</span>
+              <button class="phone-heart"><i class="bi bi-heart"></i></button>
+              <div class="phone-card-copy">
+                <strong>₹{{ p.price|rupees }}</strong>
+                <span><i class="bi bi-geo-alt"></i> {{ p.location }}</span>
+                <div><b>{{ p.bedrooms }} Bd</b><b>{{ p.bathrooms }} Ba</b><b>{{ p.area_sqft }} Sqft</b></div>
+              </div>
+            </a>
+            {% empty %}
+            <a href="#properties" class="phone-property-card">
+              <img src="https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=900&q=80" alt="Luxury home">
+              <span class="phone-sale-dot"><i></i> For sale</span>
+              <button class="phone-heart"><i class="bi bi-heart"></i></button>
+              <div class="phone-card-copy"><strong>₹1,85,000/mo</strong><span><i class="bi bi-geo-alt"></i> Indiranagar, Bengaluru</span><div><b>4 Bd</b><b>3 Ba</b><b>2,766 Sqft</b></div></div>
+            </a>
+            {% endfor %}
+            <div class="phone-bottom-nav"><span class="active"><i class="bi bi-grid"></i></span><span><i class="bi bi-heart"></i></span><span><i class="bi bi-bell"></i></span><span><i class="bi bi-gear"></i></span></div>
+          </article>
+
+          <article class="phone-frame phone-detail-view">
+            <div class="phone-top-actions">
+              <button><i class="bi bi-arrow-left"></i></button>
+              <span></span>
+              <button><i class="bi bi-heart"></i></button>
+              <button><i class="bi bi-share"></i></button>
+            </div>
+            <div class="phone-hero-image">
+              <img src="https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=900&q=85" alt="Property preview">
+              <span><i class="bi bi-play-fill"></i></span>
+              <b><i class="bi bi-images"></i> 1/25</b>
+            </div>
+            <div class="phone-gallery-row">
+              <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=400&q=80" alt="Living room">
+              <img src="https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=400&q=80" alt="Bedroom">
+              <img src="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=400&q=80" alt="Kitchen">
+            </div>
+            <span class="phone-sale-dot detail-dot"><i></i> For sale</span>
+            <h3>₹3.95 Cr <small>Est. ₹2.1 L/mo</small></h3>
+            <p><i class="bi bi-geo-alt"></i> Whitefield Main Road, Bengaluru, Karnataka, India</p>
+            <div class="phone-spec-grid">
+              <span><i class="bi bi-house"></i> Single family</span>
+              <span><i class="bi bi-shield-check"></i> Year built 2010</span>
+              <span><i class="bi bi-bed"></i> 3 Bed</span>
+              <span><i class="bi bi-badge-wc"></i> 2.5 Bath</span>
+            </div>
+            <div class="phone-cta-row"><button>Contact an Agent</button><button>Schedule Tour</button></div>
+          </article>
+
+          <article class="phone-frame phone-filter-view">
+            <div class="phone-top-actions">
+              <button><i class="bi bi-arrow-left"></i></button>
+              <span></span>
+              <button><i class="bi bi-map"></i></button>
+              <button><i class="bi bi-three-dots"></i></button>
+            </div>
+            <div class="phone-segment"><span class="active">Buy</span><span>Rent</span><span>Just sold</span></div>
+            <div class="phone-field"><span>Property type</span><b>Any <i class="bi bi-chevron-down"></i></b></div>
+            <div class="phone-segment small"><span class="active">Property price</span><span>Monthly payment</span></div>
+            <div class="phone-price-wheel">
+              <span>₹10L</span><span>₹20L</span><strong>₹30L</strong><div>No Min <em>To</em> No Max</div><span>₹50L</span><span>₹60L</span>
+            </div>
+            <h3>Bedrooms</h3>
+            <div class="phone-chips bedroom"><span class="active">Any</span><span>Studio+</span><span>1+</span><span>2+</span><span>3+</span></div>
+            <div class="phone-cta-row"><button>Contact an Agent</button><button>Schedule Tour</button></div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if apartment_plan_showcase %}
+<section class="apartment-plan-showcase">
+  <div class="apartment-plan-intro">
+    <p class="section-kicker">Apartment layouts</p>
+    <h2>Explore the apartments in 3D</h2>
+  </div>
+  <div class="swiper apartment-plan-swiper">
+    <div class="swiper-wrapper">
+      {% for plan in apartment_plan_showcase %}
+      <div class="swiper-slide">
+        <article class="apartment-plan-slide">
+          <div class="apartment-plan-heading">
+            <span>{{ plan.area }} ({{ plan.rooms }})</span>
+          </div>
+          <div class="apartment-plan-image-wrap">
+            <img src="{% static plan.image %}" alt="{{ plan.alt }}">
+          </div>
+          <div class="apartment-plan-caption">
+            <h3>{{ plan.title }}</h3>
+            <p>{{ plan.summary }}</p>
+          </div>
+        </article>
+      </div>
+      {% endfor %}
+    </div>
+    <button class="apartment-plan-nav apartment-plan-prev" type="button" aria-label="Previous apartment plan">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <button class="apartment-plan-nav apartment-plan-next" type="button" aria-label="Next apartment plan">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+    <div class="apartment-plan-pagination"></div>
+  </div>
+</section>
+{% endif %}
+
+<section id="properties" class="section-pad">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="row g-4">
+      <div class="col-xl-3">
+        <form method="get" class="filter-panel sticky-inquiry">
+          <p class="section-kicker mb-2">Smart filters</p>
+          <h2 class="h4 fw-bold mb-4">Refine your search</h2>
+          <div class="mb-3">
+            <label class="form-label">Location</label>
+            <input name="location" value="{{ filters.location }}" class="form-control" placeholder="Dubai, LA, Austin">
+          </div>
+          <div class="row g-2">
+            <div class="col-6"><input name="min_price" value="{{ filters.min_price }}" type="number" class="form-control" placeholder="Min price"></div>
+            <div class="col-6"><input name="max_price" value="{{ filters.max_price }}" type="number" class="form-control" placeholder="Max price"></div>
+          </div>
+          <div class="row g-2 mt-1">
+            <div class="col-6">
+              <select name="bedrooms" class="form-select">
+                <option value="">Bedrooms</option>
+                {% for n in "12345" %}<option value="{{ n }}" {% if filters.bedrooms == n %}selected{% endif %}>{{ n }}+</option>{% endfor %}
+              </select>
+            </div>
+            <div class="col-6">
+              <select name="bathrooms" class="form-select">
+                <option value="">Bathrooms</option>
+                {% for n in "12345" %}<option value="{{ n }}" {% if filters.bathrooms == n %}selected{% endif %}>{{ n }}+</option>{% endfor %}
+              </select>
+            </div>
+          </div>
+          <div class="mt-3">
+            <select name="furnished" class="form-select">
+              <option value="">Furnished status</option>
+              <option value="yes" {% if filters.furnished == 'yes' %}selected{% endif %}>Furnished</option>
+              <option value="no" {% if filters.furnished == 'no' %}selected{% endif %}>Unfurnished</option>
+            </select>
+          </div>
+          <div class="mt-3">
+            <select name="sort" class="form-select">
+              <option value="newest" {% if filters.sort == 'newest' %}selected{% endif %}>Newest first</option>
+              <option value="price_low" {% if filters.sort == 'price_low' %}selected{% endif %}>Price low to high</option>
+              <option value="price_high" {% if filters.sort == 'price_high' %}selected{% endif %}>Price high to low</option>
+              <option value="area" {% if filters.sort == 'area' %}selected{% endif %}>Largest area</option>
+            </select>
+          </div>
+          <div class="d-grid gap-2 mt-4">
+            <button class="btn btn-luxury-dark"><i class="bi bi-sliders"></i> Apply Filters</button>
+            <a href="{{ reset_url|default:'/' }}" class="btn btn-luxury-light">Reset</a>
+          </div>
+        </form>
+      </div>
+      <div class="col-xl-9">
+        <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-end mb-4">
+          <div>
+            <p class="section-kicker">{{ page_kicker|default:'Explore all property' }}</p>
+            <h2 class="section-title text-dark mb-0">{{ page_title|default:'Curated listings' }}</h2>
+          </div>
+          <div class="btn-group" role="group" aria-label="Property pages">
+            <a href="{% url 'buy_properties' %}" class="btn {% if filters.listing_type == 'buy' %}btn-luxury-dark{% else %}btn-luxury-light{% endif %}">Buy</a>
+            <a href="{% url 'rent_properties' %}" class="btn {% if filters.listing_type == 'rent' %}btn-luxury-dark{% else %}btn-luxury-light{% endif %}">Rent</a>
+            <a href="{% url 'villa_properties' %}" class="btn {% if filters.property_type == 'villa' %}btn-luxury-dark{% else %}btn-luxury-light{% endif %}">Villas</a>
+            <a href="{% url 'apartment_properties' %}" class="btn {% if filters.property_type == 'apartment' %}btn-luxury-dark{% else %}btn-luxury-light{% endif %}">Apartments</a>
+            <a href="{% url 'house_properties' %}" class="btn {% if filters.property_type == 'house' %}btn-luxury-dark{% else %}btn-luxury-light{% endif %}">Houses</a>
+            <a href="{% url 'commercial_properties' %}" class="btn {% if filters.property_type == 'commercial' %}btn-luxury-dark{% else %}btn-luxury-light{% endif %}">Commercial</a>
+            <a href="{% url 'land_properties' %}" class="btn {% if filters.property_type == 'land' %}btn-luxury-dark{% else %}btn-luxury-light{% endif %}">Lands</a>
+          </div>
+        </div>
+        <div class="row g-4">
+          {% for p in properties %}
+          <div class="col-md-6 col-xxl-4">
+            {% include 'properties/partials/property_card.html' with p=p wishlist_ids=wishlist_ids %}
+          </div>
+          {% empty %}
+          <div class="col-12">
+            <div class="glass-card p-5 text-center">
+              <h3>No properties match your search.</h3>
+              <p class="soft-text mb-0">Adjust the filters or add a new listing from your agent dashboard.</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <nav class="mt-5" aria-label="Property pagination">
+          <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+            <li class="page-item {% if page_obj.number == num %}active{% endif %}"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            {% endif %}
+          </ul>
+        </nav>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad pt-0">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-4">
+      <div class="col"><a href="{% url 'villa_properties' %}" class="category-tile category-link" style="--tile-img:url('https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=900&q=80')"><h3>Villas</h3><p>Private residences</p></a></div>
+      <div class="col"><a href="{% url 'apartment_properties' %}" class="category-tile category-link" style="--tile-img:url('https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=900&q=80')"><h3>Apartments</h3><p>Vertical luxury</p></a></div>
+      <div class="col"><a href="{% url 'house_properties' %}" class="category-tile category-link" style="--tile-img:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80')"><h3>Houses</h3><p>Family addresses</p></a></div>
+      <div class="col"><a href="{% url 'commercial_properties' %}" class="category-tile category-link" style="--tile-img:url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=900&q=80')"><h3>Commercial</h3><p>Prime spaces</p></a></div>
+      <div class="col"><a href="{% url 'land_properties' %}" class="category-tile category-link" style="--tile-img:url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=900&q=80')"><h3>Land</h3><p>Future estates</p></a></div>
+    </div>
+  </div>
+</section>
+
+<section id="why-us" class="section-pad section-dark">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-5">
+        <p class="section-kicker">Why choose us</p>
+        <h2 class="section-title">A calmer way to move through the market</h2>
+      </div>
+      <div class="col-lg-7">
+        <div class="row g-3">
+          <div class="col-md-4"><div class="glass-card p-4 h-100 text-white"><i class="bi bi-shield-check text-gold fs-3"></i><h3 class="h5 mt-3">Verified listings</h3><p class="text-white-50 mb-0">Admin approval keeps the collection polished and trustworthy.</p></div></div>
+          <div class="col-md-4"><div class="glass-card p-4 h-100 text-white"><i class="bi bi-person-workspace text-gold fs-3"></i><h3 class="h5 mt-3">Agent access</h3><p class="text-white-50 mb-0">Inquiry flows connect buyers and renters directly to owners and agents.</p></div></div>
+          <div class="col-md-4"><div class="glass-card p-4 h-100 text-white"><i class="bi bi-stars text-gold fs-3"></i><h3 class="h5 mt-3">Premium search</h3><p class="text-white-50 mb-0">Filter by lifestyle essentials without losing the visual experience.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials" class="section-pad">
+  <div class="container-fluid px-3 px-lg-5">
+    <p class="section-kicker">Testimonials</p>
+    <h2 class="section-title text-dark mb-4">Client stories</h2>
+    <div class="row g-4">
+      <div class="col-md-4"><div class="glass-card p-4 h-100"><p>"The search felt private, fast, and beautifully curated."</p><strong>Jenny Wilson</strong><div class="soft-text">Buyer</div></div></div>
+      <div class="col-md-4"><div class="glass-card p-4 h-100"><p>"Our listings finally look as premium as the homes we represent."</p><strong>Michael Blake</strong><div class="soft-text">Agent</div></div></div>
+      <div class="col-md-4"><div class="glass-card p-4 h-100"><p>"Saved properties and direct inquiries made touring simple."</p><strong>Emma James</strong><div class="soft-text">Renter</div></div></div>
+    </div>
+  </div>
+</section>
+{% endblock %}

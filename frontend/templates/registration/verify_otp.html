@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block title %}Verify Identity | Smart Property Finder{% endblock %}
+{% block content %}
+<section class="auth-page d-flex align-items-center">
+  <div class="auth-card mx-auto" style="max-width: 520px; width: 100%; border: 1px solid rgba(255,255,255,0.18); border-radius: 28px; background: rgba(8, 12, 18, 0.46); backdrop-filter: blur(22px); padding: 40px; box-shadow: 0 18px 45px rgba(0,0,0,0.22);">
+    <p class="eyebrow text-gold text-uppercase tracking-wider mb-2" style="font-size: 0.75rem; letter-spacing: 0.15rem; font-weight: 700;">Security Verification</p>
+    <h1 class="auth-title display-5 mb-3" style="font-family: 'Playfair Display', serif; color: #fff; font-size: 2.2rem;">Verify your email</h1>
+    <p class="text-white-50 mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+      We sent a 6-digit verification code (OTP) to <strong class="text-gold" style="color: #c9a14a;">{{ email }}</strong>. 
+      Please enter it below to confirm your identity.
+    </p>
+
+    <!-- OTP Submission Form -->
+    <form method="post" class="js-loading-form auth-form">{% csrf_token %}
+      {% for field in form %}
+      <div class="mb-4">
+        <label class="form-label text-white-50 small text-uppercase tracking-wider d-block text-center mb-3" style="letter-spacing: 0.1rem; font-weight: 600;">{{ field.label }}</label>
+        {{ field }}
+        {% if field.errors %}
+          <div class="text-center mt-2">
+            <small class="text-danger" style="font-weight: 500;">{{ field.errors|join:', ' }}</small>
+          </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger text-center py-2" style="border-radius: 12px; font-size: 0.9rem;">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <button class="btn btn-gold w-100 py-3 mt-2" type="submit" style="border: 0; font-weight: 700; background: linear-gradient(135deg, #f4d88a, #c9a14a); color: #111; border-radius: 16px; transition: all 0.25s ease;">
+        <span class="spinner-border spinner-border-sm me-2 d-none" aria-hidden="true"></span>
+        <span class="btn-label">Verify & Continue</span>
+      </button>
+    </form>
+
+    <!-- Resend OTP and Timer Area -->
+    <div class="mt-4 pt-3 border-top border-secondary-subtle text-center">
+      <p class="text-white-50 small mb-2" id="timer-text">
+        Code expires in: <span id="countdown" class="text-gold fw-bold" style="color: #c9a14a;">05:00</span>
+      </p>
+      
+      <form method="post" action="{% url 'verify_otp' %}" id="resend-form" class="d-none">
+        {% csrf_token %}
+        <input type="hidden" name="resend" value="1">
+        <span class="text-white-50 small">Didn't receive the code? </span>
+        <button type="submit" class="btn btn-link text-gold p-0 fw-bold text-decoration-none" style="color: #c9a14a; font-size: 0.9rem;">Resend OTP</button>
+      </form>
+    </div>
+
+    <p class="mt-4 mb-0 text-center text-white-50 small">
+      <a href="{% url 'forgot_password' %}" class="text-decoration-none text-white-50" style="transition: color 0.2s;"><i class="bi bi-arrow-left me-1"></i> Use a different email</a>
+    </p>
+  </div>
+</section>
+
+<!-- Countdown JavaScript for Premium Micro-Interactions -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const countdownEl = document.getElementById('countdown');
+    const timerTextEl = document.getElementById('timer-text');
+    const resendFormEl = document.getElementById('resend-form');
+    
+    // Check if we already have a saved end time in localStorage for this session/email
+    const sessionEmail = "{{ email }}";
+    const storageKey = `otp_expiry_${sessionEmail}`;
+    let expiryTime = localStorage.getItem(storageKey);
+    
+    if (!expiryTime) {
+      // 5 minutes from now
+      expiryTime = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem(storageKey, expiryTime);
+    } else {
+      expiryTime = parseInt(expiryTime, 10);
+    }
+    
+    function updateTimer() {
+      const remaining = expiryTime - Date.now();
+      
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        localStorage.removeItem(storageKey);
+        timerTextEl.classList.add('d-none');
+        resendFormEl.classList.remove('d-none');
+      } else {
+        const totalSeconds = Math.floor(remaining / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        
+        countdownEl.textContent = 
+          String(minutes).padStart(2, '0') + ':' + 
+          String(seconds).padStart(2, '0');
+      }
+    }
+    
+    updateTimer();
+    const timerInterval = setInterval(updateTimer, 1000);
+    
+    // Clear timer cache when resending
+    resendFormEl.addEventListener('submit', function() {
+      localStorage.removeItem(storageKey);
+    });
+  });
+</script>
+{% endblock %}
