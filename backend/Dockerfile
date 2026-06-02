@@ -4,4 +4,4 @@ COPY . .
 RUN pip install -r requirements.txt
 RUN python manage.py collectstatic --noinput
 EXPOSE 10000
-CMD ["gunicorn", "--bind", "0.0.0.0:10000", "smart_property_finder_separated.wsgi:application"]
+CMD ["gunicorn", "--bind", "0.0.0.0:10000", "smart_property_finder.wsgi:application"]

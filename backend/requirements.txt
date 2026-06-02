@@ -1,8 +1,10 @@
 asgiref==3.11.1
 Django==5.0.14
 djangorestframework==3.17.1
+gunicorn==26.0.0
 node==2.0.0
 odict==2.0.0
+packaging==26.2
 pillow==12.2.0
 plumber==2.0.0
 psycopg2-binary==2.9.12
