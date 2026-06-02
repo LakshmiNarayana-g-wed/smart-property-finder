@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load property_extras %}
+{% block title %}My Listings{% endblock %}
+{% block content %}
+<section class="section-pad" style="padding-top:130px;">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-end mb-4">
+      <div>
+        <p class="section-kicker">Agent dashboard</p>
+        <h1 class="section-title text-dark mb-0">My listings</h1>
+      </div>
+      <a href="{% url 'property_create' %}" class="btn btn-gold"><i class="bi bi-plus-lg"></i> New Property</a>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-md-3"><div class="dashboard-card p-4"><span class="soft-text">Total Listings</span><h2>{{ properties|length }}</h2></div></div>
+      <div class="col-md-3"><div class="dashboard-card p-4"><span class="soft-text">Active Portfolio</span><h2>Live</h2></div></div>
+      <div class="col-md-3"><div class="dashboard-card p-4"><span class="soft-text">Approval Flow</span><h2>Admin</h2></div></div>
+      <div class="col-md-3"><div class="dashboard-card p-4"><span class="soft-text">Inquiries</span><h2>Ready</h2></div></div>
+    </div>
+    <div class="table-luxury">
+      <table class="table table-hover">
+        <thead><tr><th>Title</th><th>Type</th><th>Price</th><th>Status</th><th>Approval</th><th></th></tr></thead>
+        <tbody>
+        {% for p in properties %}
+        <tr>
+          <td><a href="{{ p.get_absolute_url }}" class="fw-bold text-decoration-none">{{ p.title }}</a><div class="soft-text small">{{ p.location }}</div></td>
+          <td>{{ p.get_listing_type_display }} · {{ p.get_property_type_display }}</td>
+          <td class="fw-bold">₹{{ p.price|rupees }}</td>
+          <td>{{ p.get_status_display }}</td>
+          <td><span class="spec-pill">{{ p.get_approval_status_display }}</span></td>
+          <td class="text-end">
+            <a href="{% url 'property_update' p.pk %}" class="btn btn-sm btn-luxury-light">Edit</a>
+            <a href="{% url 'property_delete' p.pk %}" class="btn btn-sm btn-outline-danger rounded-pill">Delete</a>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center text-muted py-5">You have no listings yet.</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

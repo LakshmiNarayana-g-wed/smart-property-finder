@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<section class="section-pad" style="padding-top:130px;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-xl-10">
+        <div class="form-shell p-4 p-lg-5">
+          <div class="d-flex flex-column flex-md-row justify-content-between gap-3 mb-4">
+            <div>
+              <p class="section-kicker">Agent workspace</p>
+              <h1 class="section-title text-dark mb-0">{{ title }}</h1>
+            </div>
+            <a href="{% url 'my_properties' %}" class="btn btn-luxury-light align-self-start"><i class="bi bi-arrow-left"></i> My Listings</a>
+          </div>
+          <form method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div class="row g-3">
+              {% for field in form %}
+              <div class="{% if field.name == 'description' or field.name == 'amenities' %}col-12{% else %}col-md-6{% endif %}">
+                <label class="form-label">{{ field.label }}</label>
+                {% if field.field.widget.input_type == 'checkbox' %}
+                <div class="form-check form-switch mt-2">
+                  {{ field }}
+                  <label class="form-check-label" for="{{ field.id_for_label }}">Enable</label>
+                </div>
+                {% else %}
+                {{ field }}
+                {% endif %}
+                {% if field.help_text %}<small class="form-text text-muted">{{ field.help_text }}</small>{% endif %}
+                {% if field.errors %}<div class="text-danger small">{{ field.errors|join:', ' }}</div>{% endif %}
+              </div>
+              {% endfor %}
+              <div class="col-12">
+                <label class="form-label">Upload multiple property images</label>
+                <input type="file" name="images" class="form-control" multiple accept="image/*">
+              </div>
+            </div>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+              <button class="btn btn-gold px-4 py-3"><i class="bi bi-check2-circle"></i> Save Listing</button>
+              <a href="{% url 'property_list' %}" class="btn btn-luxury-light">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

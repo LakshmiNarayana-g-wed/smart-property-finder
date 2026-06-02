@@ -1,6 +1,7 @@
 FROM python:3.13.7
 WORKDIR /app
 COPY . .
+ENV FRONTEND_DIR=/app/frontend
 RUN pip install -r requirements.txt
 RUN python manage.py collectstatic --noinput
 EXPOSE 10000

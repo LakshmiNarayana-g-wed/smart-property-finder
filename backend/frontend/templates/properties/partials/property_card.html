@@ -1,0 +1,38 @@
+{% load property_extras %}
+<div class="property-card">
+  <div class="property-media">
+    {% if p.images.first %}
+      <img src="{{ p.images.first.image.url }}" alt="{{ p.title }}">
+    {% else %}
+      <img src="{{ p.default_image_url }}" alt="{{ p.title }}">
+    {% endif %}
+    <div class="media-top">
+      <span class="property-badge"><span class="text-success">●</span> For {{ p.get_listing_type_display }}</span>
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'wishlist_toggle' p.pk %}">{% csrf_token %}
+        <button class="wishlist-btn" aria-label="Save property">
+          <i class="bi bi-heart{% if p.id in wishlist_ids %}-fill text-danger{% endif %}"></i>
+        </button>
+      </form>
+      {% else %}
+      <button class="wishlist-btn js-account-required" type="button" aria-label="Save property">
+        <i class="bi bi-heart"></i>
+      </button>
+      {% endif %}
+    </div>
+  </div>
+  <div class="property-body">
+    <div class="d-flex justify-content-between gap-3">
+      <span class="property-badge">{{ p.get_property_type_display }}</span>
+      {% if p.is_featured %}<span class="property-badge"><i class="bi bi-star-fill text-gold"></i> Featured</span>{% endif %}
+    </div>
+    <a href="{{ p.get_absolute_url }}" class="property-title d-block mt-3{% if not user.is_authenticated %} js-account-required{% endif %}">{{ p.title }}</a>
+    <p class="soft-text small mb-2"><i class="bi bi-geo-alt"></i> {{ p.location }}</p>
+    <div class="price-line">₹{{ p.price|rupees }}</div>
+    <div class="spec-row">
+      <span class="spec-pill"><i class="bi bi-door-closed"></i> {{ p.bedrooms }} Bed</span>
+      <span class="spec-pill"><i class="bi bi-badge-wc"></i> {{ p.bathrooms }} Bath</span>
+      <span class="spec-pill"><i class="bi bi-aspect-ratio"></i> {{ p.area_sqft }} Sqft</span>
+    </div>
+  </div>
+</div>

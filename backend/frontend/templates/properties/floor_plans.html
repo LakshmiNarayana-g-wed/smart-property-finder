@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}{{ active_plan.title }} | Smart Property Finder{% endblock %}
+{% block content %}
+<section class="floor-plan-page">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="floor-plan-hero">
+      <div>
+        <p class="section-kicker">{{ active_plan.kicker }}</p>
+        <h1 class="section-title mb-3">{{ active_plan.title }}</h1>
+        <p class="floor-plan-copy">{{ active_plan.summary }}</p>
+      </div>
+      <a href="{% url 'apartment_properties' %}" class="btn btn-gold"><i class="bi bi-building"></i> View Apartments</a>
+    </div>
+
+    <div class="floor-plan-tabs">
+      {% for plan in floor_plans %}
+      <a href="{% url 'floor_plan_detail' plan.slug %}" class="{% if plan.slug == active_plan.slug %}active{% endif %}">{{ plan.label }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="row g-4 align-items-start">
+      <div class="col-xl-8">
+        <div class="plan-sheet">
+          {% if active_plan.kind == 'master' %}
+          <div class="master-plan-drawing">
+            <div class="site-boundary"></div>
+            <div class="site-road road-top"></div>
+            <div class="site-road road-bottom"></div>
+            <div class="site-block block-a">Building A</div>
+            <div class="site-block block-b">Building B</div>
+            <div class="site-block block-g">Building G</div>
+            <div class="site-block block-l">Building L</div>
+            <div class="site-amenity clubhouse">Clubhouse</div>
+            <div class="site-amenity pool">Pool</div>
+            <div class="site-amenity garden">Garden Court</div>
+            <div class="site-amenity parking">Parking</div>
+            <span class="tree t1"></span><span class="tree t2"></span><span class="tree t3"></span><span class="tree t4"></span>
+            <span class="tree t5"></span><span class="tree t6"></span><span class="tree t7"></span><span class="tree t8"></span>
+          </div>
+          {% elif active_plan.kind == 'cluster' %}
+          <div class="building-plan cluster-plan">
+            <div class="core">Lift Lobby</div>
+            {% for n in "12345678" %}
+            <div class="unit unit-{{ n }}"><b>{{ n }}0{{ n }}</b><span>2 BHK</span><small>Living · Kitchen · Balcony</small></div>
+            {% endfor %}
+          </div>
+          {% elif active_plan.kind == 'wing' %}
+          <div class="building-plan wing-plan">
+            <div class="corridor">Main Corridor</div>
+            <div class="core core-left">Lift Bank</div>
+            <div class="core core-right">Lift Bank</div>
+            {% for n in "123456789" %}
+            <div class="unit"><b>L-{{ n }}0{{ n }}</b><span>{% cycle '2 BHK' '3 BHK' 'Studio' %}</span><small>Living · Bedroom · Balcony</small></div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div class="building-plan linear-plan">
+            <div class="corridor">Shared Corridor</div>
+            <div class="core core-left">Lift Core</div>
+            <div class="core core-right">Lift Core</div>
+            {% for n in "12345678" %}
+            <div class="unit"><b>A-{{ n }}0{{ n }}</b><span>{% cycle '2 BHK' '3 BHK' %}</span><small>Living · Dining · Balcony</small></div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col-xl-4">
+        <aside class="plan-info-card">
+          <p class="section-kicker mb-3">Plan details</p>
+          <h2>{{ active_plan.label }}</h2>
+          <p>{{ active_plan.summary }}</p>
+          <div class="plan-stat-list">
+            {% for stat in active_plan.stats %}
+            <span><i class="bi bi-check2-circle"></i> {{ stat }}</span>
+            {% endfor %}
+          </div>
+          <a href="{% url 'property_list' %}#properties" class="btn btn-luxury-light w-100 mt-4">Browse Matching Listings</a>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

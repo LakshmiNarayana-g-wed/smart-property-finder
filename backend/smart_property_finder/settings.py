@@ -5,7 +5,10 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 # PROJECT_ROOT points to the root folder containing both backend/ and frontend/
 PROJECT_ROOT = BASE_DIR.parent
-FRONTEND_DIR = Path(os.environ.get('FRONTEND_DIR', PROJECT_ROOT / 'frontend'))
+FRONTEND_DIR = Path(os.environ['FRONTEND_DIR']) if os.environ.get('FRONTEND_DIR') else next(
+    (path for path in (PROJECT_ROOT / 'frontend', BASE_DIR / 'frontend') if path.exists()),
+    PROJECT_ROOT / 'frontend',
+)
 
 SECRET_KEY = 'django-insecure-change-me-in-production-xyz123'
 DEBUG = True

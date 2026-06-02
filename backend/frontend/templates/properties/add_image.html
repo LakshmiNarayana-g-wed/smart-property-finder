@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="section-pad" style="padding-top:130px;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="form-shell p-4 p-lg-5">
+          <p class="section-kicker">Media management</p>
+          <h1 class="section-title text-dark mb-4">Add image</h1>
+          <p class="soft-text">Upload a new gallery image for {{ property.title }}.</p>
+          <form method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% for field in form %}
+            <div class="mb-3"><label class="form-label">{{ field.label }}</label>{{ field }}</div>
+            {% endfor %}
+            <button class="btn btn-gold px-4 py-3">Upload</button>
+            <a href="{{ property.get_absolute_url }}" class="btn btn-luxury-light">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Login | Smart Property Finder{% endblock %}
+{% block content %}
+<section class="auth-page">
+  <div class="auth-shell auth-shell-login">
+    <div class="auth-visual">
+      <div>
+        <p class="eyebrow">Smart access</p>
+        <h1>Find your next address with confidence.</h1>
+        <p>Sign in once and move straight into your property dashboard.</p>
+      </div>
+      <div class="auth-trust-row">
+        <span><i class="bi bi-shield-check"></i> Secure login</span>
+        <span><i class="bi bi-house-check"></i> Saved homes</span>
+      </div>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <p class="eyebrow">Private access</p>
+        <h2 class="auth-title">Welcome back</h2>
+        <p class="text-white-50 mb-0">Enter your username or email and password to continue.</p>
+      </div>
+      <form method="post" class="js-loading-form auth-form">{% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<small class="text-danger">{{ field.errors|join:', ' }}</small>{% endif %}
+        </div>
+        {% endfor %}
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors }}</div>{% endif %}
+        <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+          <span class="text-white-50 small"><i class="bi bi-lock me-1"></i> Password protected</span>
+          <a href="{% url 'forgot_password' %}" class="small">Forgot password?</a>
+        </div>
+        <button class="btn btn-gold w-100 py-3" type="submit">
+          <span class="spinner-border spinner-border-sm me-2 d-none" aria-hidden="true"></span>
+          <span class="btn-label">Login</span>
+        </button>
+      </form>
+      <p class="mt-4 mb-0 text-center text-white-50">New here? <a href="{% url 'signup' %}">Create an account</a></p>
+    </div>
+  </div>
+</section>
+{% endblock %}

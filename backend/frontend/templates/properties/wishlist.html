@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load property_extras %}
+{% block title %}Saved Properties{% endblock %}
+{% block content %}
+<section class="saved-page">
+  <div class="container-fluid px-3 px-lg-5">
+    <div class="saved-hero">
+      <div>
+        <p class="section-kicker">Saved collection</p>
+        <h1 class="section-title mb-2">Saved properties</h1>
+        <p class="soft-text mb-0">{{ items|length }} listing{{ items|length|pluralize }} saved for later review.</p>
+      </div>
+      <a href="{% url 'property_list' %}#properties" class="btn btn-gold"><i class="bi bi-search"></i> Browse Properties</a>
+    </div>
+
+    {% if items %}
+    <div class="saved-list">
+      {% for item in items %}
+      <article class="saved-item">
+        <a href="{{ item.property.get_absolute_url }}" class="saved-thumb">
+          {% if item.property.images.first %}
+          <img src="{{ item.property.images.first.image.url }}" alt="{{ item.property.title }}">
+          {% else %}
+          <img src="https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=900&q=80" alt="{{ item.property.title }}">
+          {% endif %}
+        </a>
+        <div class="saved-copy">
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+            <span class="property-badge">For {{ item.property.get_listing_type_display }}</span>
+            <span class="property-badge">{{ item.property.get_property_type_display }}</span>
+            {% if item.property.is_featured %}<span class="property-badge"><i class="bi bi-star-fill text-gold"></i> Featured</span>{% endif %}
+          </div>
+          <a href="{{ item.property.get_absolute_url }}" class="saved-title">{{ item.property.title }}</a>
+          <p class="soft-text small mb-3"><i class="bi bi-geo-alt"></i> {{ item.property.location }}</p>
+          <div class="saved-meta">
+            <span>₹{{ item.property.price|rupees }}</span>
+            <span><i class="bi bi-door-closed"></i>{{ item.property.bedrooms }} Bed</span>
+            <span><i class="bi bi-badge-wc"></i>{{ item.property.bathrooms }} Bath</span>
+            <span><i class="bi bi-aspect-ratio"></i>{{ item.property.area_sqft }} Sqft</span>
+          </div>
+          <div class="saved-agent">
+            <i class="bi bi-person-circle"></i>
+            <span>{{ item.property.owner.get_full_name|default:item.property.owner.username }}</span>
+            <small>{{ item.property.owner.email }}</small>
+          </div>
+        </div>
+        <div class="saved-actions">
+          <a href="{{ item.property.get_absolute_url }}" class="btn btn-luxury-light w-100"><i class="bi bi-eye"></i> View Details</a>
+          <form method="post" action="{% url 'wishlist_toggle' item.property.pk %}">{% csrf_token %}
+            <button class="btn btn-outline-danger rounded-pill w-100"><i class="bi bi-trash"></i> Remove</button>
+          </form>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="saved-empty">
+      <i class="bi bi-heart"></i>
+      <h2>No saved properties yet</h2>
+      <p>Start exploring and save your favorite homes for later.</p>
+      <a href="{% url 'property_list' %}#properties" class="btn btn-gold">Browse Properties</a>
+    </div>
+    {% endif %}
+
+    {% if suggested_properties %}
+    <div class="mt-5">
+      <p class="section-kicker">Suggestions</p>
+      <h2 class="section-title text-dark mb-4">Save these next</h2>
+      <div class="row g-4">
+        {% for p in suggested_properties %}
+        <div class="col-md-6 col-xl-4">
+          {% include 'properties/partials/property_card.html' with p=p wishlist_ids=saved_ids %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
